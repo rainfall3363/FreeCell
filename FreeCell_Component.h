@@ -1,7 +1,7 @@
-#ifndef FREECELL_GAME_H
-#define FREECELL_GAME_H
+#ifndef FREECELL_COMPONENT_H
+#define FREECELL_COMPONENT_H
 
-#include "FreeCell_main.h"
+#include "FreeCell_Main.h"
 
 extern const int BOARD_WIDTH;
 extern const int BOARD_HEIGHT;
@@ -79,26 +79,14 @@ public:
     Card getCell(char ch, int cellNum);
     Card takeCell(char ch, int cellNum);
     void showGame();
-    bool isMovable(vector<string> moveInfo);
-    void moveCards(vector<string> moveInfo);
+    bool isMovable(vector<int> moveInfo);
+    void moveCards(vector<int> moveInfo);
     void undoMove();
     bool isAllOrdered();
     void autoMove();
     void autoComplete();
     bool isWin();
     Game& operator=(const Game& ref);
-};
-
-class Shell {
-private:
-    string command;
-    vector<int> moveInfo;
-public:
-    Shell();
-    void enterCommand();
-    string processCommand(string mode); // mode를 리턴, move 명령을 저장
-    void printMessage(string mode);    // mode에 따라 메세지 출력
-    vector<string> getMoveInfo();
 };
 
 

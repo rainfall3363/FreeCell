@@ -1,4 +1,4 @@
-#include "FreeCell_game.h"
+#include "FreeCell_Component.h"
 
 Card::Card() {
     this->numStr = "-";
@@ -159,11 +159,16 @@ Board::Board(const Board& original) {
     }    
 }
 void Board::putCard(int to, Card card) {
-
+    int toIdx = to - 1;
+    this->cascades[toIdx].cascade.push_back(card);
+    this->cascades[toIdx].occupied++;
 }
 Card Board::takeCard(int from) {
-    Card tmp = cascade
-
+    int fromIdx = from - 1;
+    Card tmp = cascades[fromIdx].cascade.back();
+    cascades[fromIdx].cascade.pop_back();
+    cascades[fromIdx].occupied--;
+    return tmp;
 }
 void Board::moveCards(int amount, int from, int to) {
     int fromIdx = from - 1;
@@ -264,7 +269,7 @@ void Game::showGame() {
     }
     cout << "\n";
 }
-bool Game::isMovable(vector<string> moveInfo) {
+bool Game::isMovable(vector<int> moveInfo) {
     // 1. 현재 움직일 수 있는 카드의 수 확인
     // 4. from의 전체 카드 수 > 옮길 카드 수
     // 5. to + 옮길 카드 수 <= BOARD_HEIGHT
@@ -281,7 +286,7 @@ bool Game::isMovable(vector<string> moveInfo) {
 
     return movable;
 }
-void Game::moveCards(vector<string> moveInfo) {
+void Game::moveCards(vector<int> moveInfo) {
     
 }
 void Game::undoMove() {
@@ -306,123 +311,3 @@ Game& Game::operator=(const Game& ref) {
     return *this;
 }
 
-
-Shell::Shell() {
-    this->command = "";
-    moveInfo = vector<int>();
-}
-void Shell::enterCommand() {
-    cout << ">> ";
-    getline(cin, this->command);
-}
-string Shell::processCommand(string mode) {
-	// command tokenize 커맨드를 띄어쓰기 기준으로 찢음
-    stringstream ss(command);
-    vector<string> commandTokens;
-    string token;
-    while (getline(ss, token, ' ')) {
-		commandTokens.push_back(token);
-	}
-    /////////////////////////////////////////
-    // command를 쪼개서 현재 mode에 따라서 다음 mode를 정의함
-    if (commandTokens.size() == 0) {
-        ;
-    }
-    else if (commandTokens.size() == 1) {
-        // new, restart, exit, undo 확인
-        // 확인되면 맞는 mode 적용 we, wr, we, wu
-        if (mode[0] == 'w') {
-            if (!(commandTokens[0].compare("Y")) || !(commandTokens[0].compare("y"))) {
-                // w 만 뗌
-                mode = mode.substr(1, 1);
-            }
-            else if (!(commandTokens[0].compare("N")) || !(commandTokens[0].compare("n"))) {
-                mode = "d";
-            }
-            else {
-                mode = "uc";
-            }
-        }
-        else {
-            if (!(commandTokens[0].compare("new"))) {
-                mode = "wn";
-            }
-            else if (!(commandTokens[0].compare("restart"))) {
-                mode = "wr";
-            }
-            else if (!(commandTokens[0].compare("undo"))) {
-                mode = "wu";
-            }
-            else if (!(commandTokens[0].compare("exit"))) {
-                mode = "we";
-            }
-            else {
-                mode = "uc";
-            }
-        }
-    }
-    else if (commandTokens.size() == 2) {
-        // from, to 유효성 확인
-        // 숫자만 있다면 amount 1 자동 적용
-        // from:    commandTokens[0] - 1~8 / f1~f4
-        // to:      commandTokens[1] - 1~8 / f1~f4 / h1~h4 
-        // amount:  commandTokens[2] - 1 직접 더하기
-        
-
-
-
-    }
-    else if (commandTokens.size() == 3) {
-        // from, to, amount 유효성 확인
-        // from:    commandTokens[0] - 1~8 / f1~f4
-        // to:      commandTokens[1] - 1~8 / f1~f4 / h1~h4 
-        // amount:  commandTokens[2] - 1 ~ BOARD_HEIGHT / f, h rk 가 있을 때 1 이외의 숫자면 x
-
-        
-
-    }
-    else {
-        mode = "uc";
-    }
-
-    
-    
-}
-void Shell::printMessage(string mode) {
-    vector<string> ordinal = {"1st line", "2nd line", "3rd line", "4th line", "5th line", "6th line", "7th line", "8th line", "FreeCell", "HomeCell"};
-    if (!mode.compare("d")) {
-            cout << "Make your move\n";
-    }
-    else if (!mode.compare("wn")) {
-        cout << "Do you want to start new game? (Y/N)\n";    
-    }
-    else if (!mode.compare("wr")) {
-        cout << "Do you want to restart the game? (Y/N)\n";    
-    }
-    else if (!mode.compare("wa")) {
-        cout << "Automatic completion is available. Do you want to activate it? (Y/N)\n"; 
-    }
-    else if (!mode.compare("we")) {
-        cout << "Do you want to quit the game? (Y/N)\n";    
-    }
-    else if (!mode.compare("m")) {
-        
-        cout << moveInfo[0] << " cards moved from " << ordinal[moveInfo[1] - 1] << " to " << ordinal[moveInfo[2] - 1] << "\n"; 
-    }
-    else if (!mode.compare("ud")) {
-        cout << "Undo completed\n"; 
-    }
-    else if (!mode.compare("um")) {
-        cout << "※※※ Can't move that way! ※※※\n"; 
-    }
-    else if (!mode.compare("uc")) {
-        cout << "※※※ Unvalid command! ※※※\n";
-    }
-    else if (!mode.compare("v")) {
-        cout << "VICTORY!!!\n";    
-    }
-}
-
-vector<string> Shell::getMoveInfo() {
-
-}

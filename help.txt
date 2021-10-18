@@ -1,0 +1,13 @@
+*** Command List ***
+1. new
+    - generate new game
+2. restart
+    - restart ongoing game
+3. exit
+    - exit program
+4. undo
+    - undo last move
+5. From(number) To(number) Amount(number)
+    - You can skip enter Amount. It will automatically set as 1.
+    - from 1~8 f1~f4, to 1~8, f1~f4, h, amount blank~17
+    - ex) 1 8 3 / 8 2 10 / f3 h / f1 4 / 3 h

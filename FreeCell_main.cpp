@@ -1,4 +1,4 @@
-#include "FreeCell_main.h"
+#include "FreeCell_Main.h"
 
 const int BOARD_WIDTH = 35;
 const int BOARD_HEIGHT = 17;
@@ -14,15 +14,48 @@ int main() {
     Game original;
     Game ongoing = original;
     Shell shell;
-    string mode = "d";
-    
+    string status = "d";
+
     while (true) {
         system("clear");        // system("cls");
         cout << "FreeCell by rainfall3363\n";
         ongoing.showGame();
+        shell.printMessage(status);
         shell.enterCommand();
-        mode = shell.processCommand(mode); // mode를 리턴, move 명령을 저장
-        shell.printMessage(mode); 
+        shell.processCommand(status);
+
+        if (!status.compare("m")) {
+            if (ongoing.isMovable(shell.getMoveInfo())) {
+                ongoing.moveCards(shell.getMoveInfo());
+            }
+        }
+        else if (!status.compare("ud")) {
+            ongoing.undoMove();
+        }
+        else if (!status.compare("r")) {
+            ongoing = original;
+        }
+        else if (!status.compare("n")) {
+            original = Game();
+            ongoing = original;
+        }
+        else if (!status.compare("e")) {
+            system("clear");
+            cout << "Thank you for playing FreeCell by rainfall3363\n\n";
+            break;
+        }
+        else if (!status.compare("a")) {
+            ongoing.autoComplete();
+        }
+        
+        if (ongoing.isAllOrdered()) {
+            status = "wa";
+        }
+
+        if (ongoing.isWin()) {
+            status = "v";
+        }
+        
 
     }
     
