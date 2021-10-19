@@ -9,6 +9,7 @@ void Shell::enterCommand() {
     getline(cin, this->command);
 }
 void Shell::processCommand(string& status) {
+    int amount = 0;
     stringstream ss(command);
     vector<string> commandTokens;
     string token;
@@ -23,7 +24,7 @@ void Shell::processCommand(string& status) {
         //////////////// 개발자 도구 /////////////////
         if (!commandTokens[0].compare("getMode")) {
             cout << status << endl;
-            sleep(5);
+            sleep(4);
             return;
         }
         else if (!commandTokens[0].compare("setMode")) {
@@ -45,48 +46,211 @@ void Shell::processCommand(string& status) {
         }
         else {
             if (!(commandTokens[0].compare("new"))) {
-                status = "wn";
+                if (!status.compare("v")) {
+                    status = "n";
+                }
+                else {
+                    status = "wn";
+                }
             }
             else if (!(commandTokens[0].compare("restart"))) {
-                status = "wr";
+                if (!status.compare("v")) {
+                    status = "r";
+                }
+                else {
+                    status = "wr";
+                }
             }
-            else if (!(commandTokens[0].compare("undo"))) {
-                status = "wu";
+            else if (!(commandTokens[0].compare("undo")) && status.compare("v")) {
+                status = "ud";
             }
             else if (!(commandTokens[0].compare("exit"))) {
-                status = "we";
+                if (!status.compare("v")) {
+                    status = "e";
+                }
+                else {
+                    status = "we";
+                }
+            }
+            else if (!status.compare("v")) {
+                ;
             }
             else {
                 status = "uc";
             }
         }
     }
-    else if (commandTokens.size() == 2) {
-        // from, to 유효성 확인
-        // 숫자만 있다면 amount 1 자동 적용
-        // from:    commandTokens[0] - 1~8 / f1~f4
-        // to:      commandTokens[1] - 1~8 / f1~f4 / h1~h4 
-        // amount:  commandTokens[2] - 1 직접 더하기
-        
-
-
-
+    else if (commandTokens.size() == 2 && status.compare("v")) {
+        if (commandTokens[0].size() == 1 && commandTokens[1].size() == 1) {
+            if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9' && commandTokens[1][0] > '0' && commandTokens[1][0] < '9') {
+                if (commandTokens[0][0] == commandTokens[1][0]) {
+                    status = "um";
+                }
+                else {
+                    moveInfo[0] = (int)commandTokens[0][0] - 48;
+                    moveInfo[1] = (int)commandTokens[1][0] - 48;
+                    status = "m";
+                }
+            }
+            else {
+                status = "uc";
+            }
+        }
+        else if (commandTokens[0].size() == 1 && commandTokens[1].size() == 2) { 
+            if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9' && (commandTokens[1][0] == 'h' || commandTokens[1][0] == 'f') && commandTokens[1][1] < '5' && commandTokens[1][1] > '0') {
+                moveInfo[0] = (int)commandTokens[0][0] - 48;
+                if (commandTokens[1][0] == 'f') {
+                    moveInfo[1] = 10 + (int)commandTokens[1][1] - 48;
+                }
+                else if (commandTokens[1][0] == 'h') {
+                    moveInfo[1] = 20 + (int)commandTokens[1][1] - 48;
+                }
+                status = "m";
+            }
+            else {
+                status = "uc";
+            }
+        }
+        else if (commandTokens[0].size() == 2 && commandTokens[1].size() == 1) {
+            if (commandTokens[0][0] == 'f' && commandTokens[0][1] < '5' && commandTokens[0][1] > '0' && commandTokens[1][0] < '9' && commandTokens[1][0] > '0') {
+                moveInfo[0] = 10 + (int)commandTokens[0][1] - 48;
+                moveInfo[1] = (int)commandTokens[1][0] - 48;
+                status = "m";
+            }
+            else {
+                status = "uc";
+            }
+        }
+        else if (commandTokens[0].size() == 2 && commandTokens[1].size() == 2) {
+            if (commandTokens[0][0] == 'f' && commandTokens[0][1] < '5' && commandTokens[0][1] > '0' && (commandTokens[1][0] == 'f' || commandTokens[1][0] == 'h') && commandTokens[1][1] > '0' && commandTokens[1][1] < '5') {
+                if (commandTokens[0][0] == 'f' && commandTokens[1][0] == 'f' && commandTokens[0][1] == commandTokens[1][1]) {
+                    status = "um";
+                }
+                else {
+                    moveInfo[0] = 10 + (int)commandTokens[0][1] - 48;
+                    if (commandTokens[1][0] == 'f') {
+                        moveInfo[1] = 10 + (int)commandTokens[1][1] - 48;
+                    }
+                    else if (commandTokens[1][0] == 'h') {
+                        moveInfo[1] = 20 + (int)commandTokens[1][1] - 48;
+                    }
+                    status = "m";
+                }
+            }
+            else {
+                status = "uc";
+            }
+        }
+        else {
+            status = "uc";
+        }
+        this->moveInfo[2] = 1;
     }
-    else if (commandTokens.size() == 3) {
-        // from, to, amount 유효성 확인
-        // from:    commandTokens[0] - 1~8 / f1~f4
-        // to:      commandTokens[1] - 1~8 / f1~f4 / h1~h4 
-        // amount:  commandTokens[2] - 1 ~ BOARD_HEIGHT / f, h rk 가 있을 때 1 이외의 숫자면 x
-
+    else if (commandTokens.size() == 3 && status.compare("v")) {
+        if (commandTokens[2].size() == 1) {
+            amount = (int)commandTokens[2][0] - 48;
+        }
+        else if (commandTokens[2].size() == 2) {
+            amount = ((int)commandTokens[2][0] - 48) * 10 + (int)commandTokens[2][1] - 48;
+        }
+        else {
+            amount = 0;
+        }
         
-
+        if (commandTokens[0].size() == 1 && commandTokens[1].size() == 1) {
+            if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9' && commandTokens[1][0] > '0' && commandTokens[1][0] < '9') {
+                if (commandTokens[0][0] == commandTokens[1][0]) {
+                    status = "um";
+                }
+                else if (amount < 1 || amount > BOARD_HEIGHT) {
+                    status = "uc";
+                }
+                else {
+                    moveInfo[0] = (int)commandTokens[0][0] - 48;
+                    moveInfo[1] = (int)commandTokens[1][0] - 48;
+                    status = "m";
+                }
+            }
+            else {
+                status = "uc";
+            }
+        }
+        else if (commandTokens[0].size() == 1 && commandTokens[1].size() == 2) { 
+            if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9' && (commandTokens[1][0] == 'h' || commandTokens[1][0] == 'f') && commandTokens[1][1] < '5' && commandTokens[1][1] > '0') {
+                if (amount != 1) {
+                    status = "uc";
+                }
+                else {
+                    moveInfo[0] = (int)commandTokens[0][0] - 48;
+                    if (commandTokens[1][0] == 'f') {
+                        moveInfo[1] = 10 + (int)commandTokens[1][1] - 48;
+                    }
+                    else if (commandTokens[1][0] == 'h') {
+                        moveInfo[1] = 20 + (int)commandTokens[1][1] - 48;
+                    }
+                    status = "m";
+                }
+            }
+            else {
+                status = "uc";
+            }
+        }
+        else if (commandTokens[0].size() == 2 && commandTokens[1].size() == 1) {
+            if (commandTokens[0][0] == 'f' && commandTokens[0][1] < '5' && commandTokens[0][1] > '0' && commandTokens[1][0] < '9' && commandTokens[1][0] > '0') {
+                if (amount != 1) {
+                    status = "uc";
+                }
+                else {
+                    moveInfo[0] = 10 + (int)commandTokens[0][1] - 48;
+                    moveInfo[1] = (int)commandTokens[1][0] - 48;
+                    status = "m";
+                }
+            }
+            else {
+                status = "uc";
+            }
+        }
+        else if (commandTokens[0].size() == 2 && commandTokens[1].size() == 2) {
+            if (commandTokens[0][0] == 'f' && commandTokens[0][1] < '5' && commandTokens[0][1] > '0' && (commandTokens[1][0] == 'f' || commandTokens[1][0] == 'h') && commandTokens[1][1] > '0' && commandTokens[1][1] < '5') {
+                if (commandTokens[0][0] == 'f' && commandTokens[1][0] == 'f' && commandTokens[0][1] == commandTokens[1][1]) {
+                    status = "um";
+                }
+                else if (amount != 1) {
+                    status = "uc";
+                }
+                else {
+                    moveInfo[0] = 10 + (int)commandTokens[0][1] - 48;
+                    if (commandTokens[1][0] == 'f') {
+                        moveInfo[1] = 10 + (int)commandTokens[1][1] - 48;
+                    }
+                    else if (commandTokens[1][0] == 'h') {
+                        moveInfo[1] = 20 + (int)commandTokens[1][1] - 48;
+                    }
+                    status = "m";
+                }
+            }
+            else {
+                status = "uc";
+            }
+        }
+        else {
+            status = "uc";
+        }
+        this->moveInfo[2] = amount;
+    }
+    else if (!status.compare("v")) {
+        ;
     }
     else {
         status = "uc";
     }
+
+    if (!status.compare("uc") || !status.compare("um")) {
+        moveInfo = vector<int>(3, 0);
+    }
 }
 void Shell::printMessage(string status) {
-    vector<string> ordinal = {"1st line", "2nd line", "3rd line", "4th line", "5th line", "6th line", "7th line", "8th line", "FreeCell", "HomeCell"};
+    vector<string> ordinal = {"1stLine", "2ndLine", "3rdLine", "4thLine", "5thLine", "6thLine", "7thLine", "8thLine", "FreeCell", "HomeCell"};
     int from = moveInfo[0] - 1;
     int to = moveInfo[1] - 1;
     int amount = moveInfo[2];
@@ -108,10 +272,10 @@ void Shell::printMessage(string status) {
     }
     else if (!status.compare("m")) {
         if (amount > 1) {
-            cout << amount << " cards moved from " << ordinal[from] << " to " << ordinal[to] << "\n"; 
+            cout << amount << "cards moved from " << ordinal[from] << " to " << ordinal[to] << "\n"; 
         }
         else {
-            cout << amount << " card moved from " << ordinal[from] << " to " << ordinal[to] << "\n"; 
+            cout << amount << "card moved from " << ordinal[from] << " to " << ordinal[to] << "\n"; 
         }
     }
     else if (!status.compare("ud")) {

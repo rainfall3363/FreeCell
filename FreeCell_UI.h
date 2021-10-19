@@ -10,8 +10,8 @@ private:
 public:
     Shell();    
     void enterCommand();
-    void processCommand(string& status); // status를 리턴, move 명령을 저장
-    void printMessage(string status);    // status에 따라 메세지 출력
+    void processCommand(string& status);
+    void printMessage(string status);
     vector<int> getMoveInfo();
 };
 

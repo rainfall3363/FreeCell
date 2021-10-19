@@ -1,49 +1,20 @@
-구현 목록
-- 보드
-- 프리셀, 홈셀
-- 케스케이드
-- 카드 52장
+# Please adjust your terminal or prompt size before start the game.
+# Each game is randomly generated, so probably the exact same game will never be played again.
+# If you wins the game, card moving commands will be disabled.
+# There may be games that cannot be won.
+# Automatic completion is not available yet.
 
-- 디스플레이
-- 보드, 각 셀, 명령어 입력창
-
-- 명령어 입력 파트
-- 명령어 처리 파트
-
-추가 예정
-- 사용자명 입력, 움직임 갯수, 점수표 
-- 도움말 (새 게임, 재시작, 되돌리기, 다시하기)
-- 세이브 로드 기능 
-
-
-나중에 추가할 개선 사항들
-- 예외처리 전부
-- const 붙일 수 있는 곳에 전부 붙이기
-
-- 이동 카드 수 직접 지정하지 않았으면 자동으로 이동 가능 갯수 알아서 움직이기
-- 게임 도중 저장 기능
-- 힌트, 카드 위치 바꾸기 아이템
-- 유저 이름 입력
-- 카드 이동 수 기록, 스코어 보드
-- undo, redo
-- 카드 순서 전부 정순이면 카드 자동 이동 
-
-
-
-//////////////////////////////////////////////////////
-자동으로 올리려는 애보다 작은 수의 카드가 잇으면 못 올라감
-undo 움직임 기록, 구현
-
-프리셀 카드 이동 가능 갯수 공식
-- 기본적으로 FreeCell의 빈 칸 + 1장 만큼 이동 가능
-- cascade에 빈 줄이 있을때
-    - 내가 이동하려는 카드가 그 빈 줄로 가려고 할 때
-    - 내가 이동하려는 카드가 빈 줄 이외의 줄로 갈 때
-
-vector<int> moveInfo
-- FreeCell 1~4 -> 11, 12, 13, 14
-- HomeCell 1~4 -> 21, 22, 23, 24
-
-Cell -> FreeCell, HomeCell 
-상속 받아서 만드는 걸로 변경
-각 함수의 기능 오버로딩 해야함
+*** Command List ***
+1. "new"
+   - Generate new game
+2. "restart"
+   - Restart present game from beginning
+3. "exit"
+   - Exit program
+4. "undo"
+   - Undo last move
+5. "From To", "From To Amount"
+   - Move cards
+   - If skip enter amount, automatically set as 1
+   - From: 1~8 f1~f4, To: 1~8 f1~f4 h1~h4, Amount: (blank) 1~18
+   - ex) 1 8 3 / f3 h1 / f1 4 / 3 h4 / f1 h3

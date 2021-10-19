@@ -71,7 +71,7 @@ private:
     Cell freeCell;
     Cell homeCell;
     Board board;
-    stack<vector<string>> moveLog;  // 생성자, 연산자 오버로딩에 추가해야함
+    vector<vector<int>> moveLog;
 public:
     Game();
     Game(const Game& original);

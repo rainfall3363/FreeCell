@@ -1,7 +1,7 @@
 #include "FreeCell_Main.h"
 
-const int BOARD_WIDTH = 35;
-const int BOARD_HEIGHT = 17;
+const int BOARD_WIDTH = 33;
+const int BOARD_HEIGHT = 20;
 const int FREECELL_SIZE = 4;
 const int HOMECELL_SIZE = 4;  
 const vector<int> CASCADE_INITIAL_LENGTH = {7, 7, 7, 7, 6, 6, 6, 6};
@@ -9,8 +9,6 @@ const vector<string> CARD_SUIT = {"♠", "◇", "♣", "♡"};
 const vector<string> CARD_NUMBER = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
 
 int main() {
-    // Menu 출력
-    // 1. new game / 2. load game / 3. help / 4. exit
     Game original;
     Game ongoing = original;
     Shell shell;
@@ -18,7 +16,7 @@ int main() {
 
     while (true) {
         system("clear");        // system("cls");
-        cout << "FreeCell by rainfall3363\n";
+        cout << "FreeCell by H.J.Choo\n\n";
         ongoing.showGame();
         shell.printMessage(status);
         shell.enterCommand();
@@ -48,14 +46,13 @@ int main() {
             ongoing.autoComplete();
         }
         
-        if (ongoing.isAllOrdered()) {
-            status = "wa";
-        }
-
         if (ongoing.isWin()) {
             status = "v";
         }
-        
+        //else if (ongoing.isAllOrdered()) {
+        //    status = "wa";
+        //}
+        // 자동 이동 확인
 
     }
     

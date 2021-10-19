@@ -184,6 +184,12 @@ void Board::moveCards(int amount, int from, int to) {
 }
 void Board::showBoard() {
     for (int i = 0; i < BOARD_HEIGHT; i++) {
+        if (i + 1 < 10) {
+            cout << " " << i + 1;
+        }
+        else {
+            cout << i + 1;
+        }
         cout << "|";
         for (int j = 0; j < cascades.size(); j++) {
             if (j == 4) { 
@@ -196,7 +202,78 @@ void Board::showBoard() {
                 cout << " " << cascades[j].cascade[i].numStr << cascades[j].cascade[i].suit << " ";
             }
         }
-        cout << "| \n";
+        cout << "|";
+        if (i + 1 < 10) {
+            cout << " " << i + 1 << "    ";
+            if (i == 0) {
+
+            }
+            else if (i == 1) {
+                cout << "# Please adjust window size to fit the game";
+            }
+            else if (i == 2) {
+                cout << "# There are games that cannot be won";
+            }
+            else if (i == 3) {
+                cout << "# Automatic completion is not available yet";
+            }
+            else if (i == 4) {
+                cout << "# Bug report to rainfall3363@gmail.com";
+            }
+            else if (i == 5) {
+
+            }
+            else if (i == 6) {
+            }
+            else if (i == 7) {
+                cout << "*** Command List ***";
+            }
+            else if (i == 8) {
+                cout << "1. \"new\"";
+            }
+            cout << '\n';
+        }
+        else {
+            cout << i + 1 << "    ";
+            if (i == 9) {
+                cout << "   - Generate new game";
+            }
+            else if (i == 10) {
+                cout << "2. \"restart\"";
+            }
+            else if (i == 11) {
+                cout << "   - Restart present game from beginning";
+            }
+            else if (i == 12) {
+                cout << "3. \"exit\"";
+            }
+            else if (i == 13) {
+                cout << "   - Exit program";
+            }
+            else if (i == 14) {
+                cout << "4. \"undo\"";
+            }
+            else if (i == 15) {
+                cout << "   - Undo last move";
+            }
+            else if (i == 16) {
+                cout << "5. \"From To\", \"From To Amount\"";
+            } 
+            else if (i == 17) {
+                cout << "   - Move cards";
+            } 
+            else if (i == 18) {
+                cout << "   - If skip enter amount, automatically set as 1";
+            }
+            else if (i == 19) {
+                cout << "   e.g. 1 8 3 / f3 h1 / f1 4 / 3 h4 / f1 h3";
+            }
+            cout << '\n';
+        }
+        // 여기에 붙여서 
+        // if (i == 3) { ~ }
+        // if (i == 4) { ~ }
+        // 도움말 작성하기
     }
 }
 bool Board::isAllOrdered() {
@@ -223,7 +300,11 @@ Game::Game(const Game& original) {
     this->freeCell = original.freeCell;
     this->homeCell = original.homeCell;
     this->board = original.board;
+    this->moveLog = vector<vector<int>>(original.moveLog.size(), vector<int>());
+    for (int i = 0; i < original.moveLog.size(); i++) {
+        this->moveLog[i] = original.moveLog[i];
     }
+}
 void Game::putCell(char ch, int cellNum, Card card) {
     if (ch == 'f' && freeCell.getCell(cellNum).value == 0) {
         freeCell.putCell(cellNum, card);
@@ -251,23 +332,41 @@ Card Game::takeCell(char ch, int cellNum) {
     return Card();
 }
 void Game::showGame() {
+    cout << "   ";
+    for (int i = 0; i < FREECELL_SIZE; i++) {
+        cout << " f" << i + 1 << " ";
+    }
+    cout << " ";
+    for (int i = 0; i < HOMECELL_SIZE; i++) {
+        cout << " h" << i + 1 << " ";
+    }
+    cout << "       How to play\n   ";
     for (int i = 0; i < BOARD_WIDTH; i++) {
         cout << "-";
     }
-    cout << "\n|";
+    cout << "       :Raise all of the cascade's cards to the top\n  |";
     this->freeCell.showCell();
     cout << "|";
     this->homeCell.showCell();
+    cout << "|       home cell by using four free cells\n  |";
+    for (int i = 0; i < BOARD_WIDTH; i++) {
+        cout << "-";
+    }
     cout << "|\n";
-    for (int i = 0; i < BOARD_WIDTH; i++) {
-        cout << "-";
-    }
-    cout << "\n";
     board.showBoard();
+    cout << "   ";
     for (int i = 0; i < BOARD_WIDTH; i++) {
         cout << "-";
     }
-    cout << "\n";
+    cout << "\n   ";
+    for (int i = 1; i <= 4; i++) {
+        cout << "  " << i << " ";
+    }
+    cout << " ";
+    for (int i = 5; i <= 8; i++) {
+        cout << "  " << i << " ";
+    }
+    cout << "\n\n";
 }
 bool Game::isMovable(vector<int> moveInfo) {
     // 1. 현재 움직일 수 있는 카드의 수 확인
@@ -287,7 +386,17 @@ bool Game::isMovable(vector<int> moveInfo) {
     return movable;
 }
 void Game::moveCards(vector<int> moveInfo) {
-    
+    // 1. board 안에서
+    // 2. freecell
+    // 3. homecell
+    cout << "from: " << moveInfo[0] << " / to: " << moveInfo[1] << " / amount: " << moveInfo[2] << '\n';
+    sleep(4);
+
+
+
+
+
+
 }
 void Game::undoMove() {
 
@@ -308,6 +417,10 @@ Game& Game::operator=(const Game& ref) {
     this->freeCell = ref.freeCell;
     this->homeCell = ref.homeCell;
     this->board = ref.board;
+    this->moveLog = vector<vector<int>>(ref.moveLog.size(), vector<int>());
+    for (int i = 0; i < ref.moveLog.size(); i++) {
+        this->moveLog[i] = ref.moveLog[i];
+    }
     return *this;
 }
 
