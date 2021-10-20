@@ -20,6 +20,7 @@ public:
     Card();
     Card(int numIdx, int suitIdx);
     Card(const Card& original);
+    bool canMoveCard(Card card);
     Card& operator=(const Card& ref);
 };
 
@@ -46,23 +47,23 @@ private:
 public:
     Cascade();
     Cascade(const Cascade& original);
-    bool checkOrder();
-    bool checkOrder(int amount);
+    bool isOrdered(int amount = 0);
     Cascade& operator=(const Cascade& ref);
 };
 
 class Board {
 private:
     vector<Cascade> cascades;
-    vector<Card> cards_list;
 public:
     Board();
     Board(const Board& original);
+    int getOccupied(int cascadeNum);    // 이동 명령 유효성 판단 위해 필요
     void putCard(int to, Card card);
+    Card getCard(int cascadeNum, int reverseIdx = -1);
     Card takeCard(int from);
     void moveCards(int from, int to, int amount);
     void showBoard();
-    bool isAllOrdered();
+    bool isOrdered(int cascadeNum, int amount = 0);
     Board& operator=(const Board& ref);
 };
 
@@ -75,15 +76,14 @@ private:
 public:
     Game();
     Game(const Game& original);
-    void putCell(char ch, int cellNum, Card card);
-    Card getCell(char ch, int cellNum);
-    Card takeCell(char ch, int cellNum);
     void showGame();
-    bool isMovable(vector<int> moveInfo);
-    void moveCards(vector<int> moveInfo);
+    bool canMoveCards(vector<int> moveInfo);
+    void moveCards(vector<int> moveInfo, bool isUndo = false);
+    bool canUndoMove();
     void undoMove();
-    bool isAllOrdered();
+    bool canAutoMove();
     void autoMove();
+    bool canAutoComplete();
     void autoComplete();
     bool isWin();
     Game& operator=(const Game& ref);

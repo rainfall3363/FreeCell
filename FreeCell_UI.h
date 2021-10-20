@@ -16,5 +16,16 @@ public:
 };
 
 // 추후 menu 화면 추가
-
+/*
+class Menu {
+private:
+    int menu;
+public:
+    void displayMenu();
+    void newGame();
+    void loadGame();
+    void helpGame();
+    void exitGame();
+}
+*/
 #endif
