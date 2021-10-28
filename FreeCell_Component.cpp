@@ -1,44 +1,61 @@
 #include "FreeCell_Component.h"
 
+const vector<string> CARD_SUIT = {"-", "♠", "♣", "♡", "◇"};
+const vector<string> CARD_NUMBER = {"-", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+
 Card::Card() {
-    this->numStr = "-";
-    this->suit = "-";
-    this->value = 0;
+    this->numIdx = 0;
+    this->suitIdx = 0;
+    this->color = 0;
 }
 Card::Card(int numIdx, int suitIdx) {
-    this->numStr = CARD_NUMBER[numIdx];
-    this->suit = CARD_SUIT[suitIdx];
-    this->value = find(CARD_NUMBER.begin(), CARD_NUMBER.end(), numStr) - CARD_NUMBER.begin() + 1;
+    this->numIdx = numIdx;
+    this->suitIdx = suitIdx;
+    if (suitIdx > 0 && suitIdx < 3) {
+        this->color = BLACK;
+    }
+    else if (suitIdx > 2 && suitIdx < 5) {
+        this->color = RED;
+    }
+    else {
+        this->color = 0;
+    }
 }
 Card::Card(const Card& original) {
-    this->numStr = original.numStr;
-    this->suit = original.suit;
-    this->value = original.value;
+    this->numIdx = original.numIdx;
+    this->suitIdx = original.suitIdx;
+    this->color = original.color;
 }
 bool Card::canMoveCard(Card card) {
-    int num1 = find(CARD_SUIT.begin(), CARD_SUIT.end(), this->suit) - CARD_SUIT.begin();
-    int num2 = find(CARD_SUIT.begin(), CARD_SUIT.end(), card.suit) - CARD_SUIT.begin();
-    if ((num1 % 2 == num2 % 2) || this->value - card.value != 1) {
+    if (card.numIdx == 0) {
         return false;
     }
-    return true;
+    else if (this->numIdx == 0) {
+        return true;
+    }
+    else if (this->numIdx - card.numIdx == 1 && this->color != card.color) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 Card& Card::operator=(const Card& ref) {
-    this->numStr = ref.numStr;
-    this->suit = ref.suit;
-    this->value = ref.value;
+    this->numIdx = ref.numIdx;
+    this->suitIdx = ref.suitIdx;
+    this->color = ref.color;
     return *this;
 }
 
 Cell::Cell() {
-    this->cell_cards = vector<Card>(); 
+    this->cell_cards = vector<Card>();
 }
-Cell::Cell(int cell_size) {
-    if (cell_size == 0) {
-        this->cell_cards = vector<Card>();
+Cell::Cell(int cellSize) {
+    if (cellSize == 0) {
+        this->cell_cards = vector<Card>();  
     }
     else {
-        this->cell_cards = vector<Card>(cell_size);
+        this->cell_cards = vector<Card>(cellSize);
     }
 }
 Cell::Cell(const Cell& original) {
@@ -51,29 +68,29 @@ Cell::Cell(const Cell& original) {
     }
 }
 void Cell::putCell(int cellNum, Card card) {
-    this->cell_cards[cellNum - 1] = card;    
+    cell_cards[cellNum - 1] = card;
 }
 Card Cell::getCell(int cellNum) {
-    return this->cell_cards[cellNum - 1];
+    return cell_cards[cellNum - 1];
 }
 Card Cell::takeCell(int cellNum) {
-    Card tmp = cell_cards[cellNum - 1];
+    Card take = cell_cards[cellNum - 1];
     cell_cards[cellNum - 1] = Card();
-    return tmp;
+    return take;
 }
 void Cell::showCell() {
     for (int i = 0; i < cell_cards.size(); i++) {
-        if (cell_cards[i].value == 10) {
-            cout << cell_cards[i].numStr << cell_cards[i].suit << " ";
+        if (cell_cards[i].numIdx == 10) {
+            cout << CARD_NUMBER[cell_cards[i].numIdx] << CARD_SUIT[cell_cards[i].suitIdx] << " ";
         }
         else {
-            cout << " " << cell_cards[i].numStr << cell_cards[i].suit << " ";
+            cout << " " << CARD_NUMBER[cell_cards[i].numIdx] << CARD_SUIT[cell_cards[i].suitIdx] << " ";
         }
     }
 }
 bool Cell::isWin() {
     for (int i = 0; i < cell_cards.size(); i++) {
-        if (cell_cards[i].value != 13) {
+        if (cell_cards[i].numIdx != 13) {
             return false;
         }
     }
@@ -81,7 +98,8 @@ bool Cell::isWin() {
 }
 Cell& Cell::operator=(const Cell& ref) {
     if (ref.cell_cards.size() == 0) {
-        this->cell_cards = vector<Card>();}
+        this->cell_cards = vector<Card>();
+    }
     else {
         this->cell_cards = vector<Card>(ref.cell_cards.size());
         copy(ref.cell_cards.begin(), ref.cell_cards.end(), this->cell_cards.begin());
@@ -94,7 +112,7 @@ Cascade::Cascade() {
     this->occupied = 0;
 }
 Cascade::Cascade(const Cascade& original) {
-    this->cascade = vector<Card>(BOARD_HEIGHT);
+    this->cascade = vector<Card>(original.cascade.size());
     copy(original.cascade.begin(), original.cascade.end(), this->cascade.begin());
     this->occupied = original.occupied;
 }
@@ -106,92 +124,87 @@ bool Cascade::isOrdered(int amount) {
         return false;
     }
     for (int i = occupied - amount; i < occupied - 1; i++) {
-        int num1 = find(CARD_SUIT.begin(), CARD_SUIT.end(), cascade[i].suit) - CARD_SUIT.begin();
-        int num2 = find(CARD_SUIT.begin(), CARD_SUIT.end(), cascade[i + 1].suit) - CARD_SUIT.begin();
-        if ((num1 % 2 == num2 % 2) || (cascade[i].value - cascade[i + 1].value != 1)) {
+        if (!cascade[i].canMoveCard(cascade[i + 1])) {
             return false;
         }
     }
     return true;
 }
 Cascade& Cascade::operator=(const Cascade& ref) {
+    this->cascade = vector<Card>(ref.cascade.size());
     copy(ref.cascade.begin(), ref.cascade.end(), this->cascade.begin());
     this->occupied = ref.occupied;
     return *this;
 }
 
-Board::Board() { 
-    int idx = 0;    // 인덱스로 활용하기 위한 변수
-    int card_amount = CARD_NUMBER.size() * CARD_SUIT.size();
-    // 52장의 카드 리스트 생성
-    vector<Card> cards_list(card_amount);
-    for (int i = 0; i < CARD_SUIT.size(); i++) {
-        for (int j = 0; j < CARD_NUMBER.size(); j++) {
-            cards_list[idx++] = Card(j, i);
-        }
-    }
-    // 0 ~ 51을 랜덤한 순서로 나열한 벡터 생성
-    idx = 0;
+Board::Board() {
+    int cardOrderIdx;
     int randomNum;  // 랜덤 숫자 변수
-    vector<int> cardOrder(card_amount, 0);
+    int suitIdx;
+    int numberIdx;
+    vector<int> card_order(CARD_AMOUNT, 0);
+    // 랜덤 보드 생성 파트
     random_device rd;
     mt19937 gen(rd());
-    uniform_int_distribution<int> dis(1, card_amount); 
-    while (idx < 52) {
+    uniform_int_distribution<int> dis(1, CARD_AMOUNT); 
+    
+    cardOrderIdx = 0;
+    while (cardOrderIdx < 52) {
         randomNum = dis(gen);
-        if (find(cardOrder.begin(), cardOrder.end(), randomNum) == cardOrder.end()) {
-            cardOrder[idx++] = randomNum;
+        if (find(card_order.begin(), card_order.end(), randomNum) == card_order.end()) {
+            card_order[cardOrderIdx++] = randomNum;
         }
     }
-    // 위에서 생성한 벡터를 바탕으로 그 벡터의 원소에 해당하는 cardOrder의 카드를 cascade에 배치함
-    idx = 0;
-    cascades = vector<Cascade>(CASCADE_INITIAL_LENGTH.size());
+    // 위에서 생성한 벡터를 바탕으로 cascade에 card를 생성
+    cardOrderIdx = 0;
+    vector<int> cascade_length = {7, 7, 7, 7, 6, 6, 6, 6};
+    cascades = vector<Cascade>(CASCADES_SIZE);
     for (int i = 0; i < cascades.size(); i++) { 
-        cascades[i].occupied = CASCADE_INITIAL_LENGTH[i]; 
-        for (int j = 0; j < CASCADE_INITIAL_LENGTH[i]; j++) { 
-            cascades[i].cascade[j] = cards_list[cardOrder[idx++] - 1];
+        cascades[i].occupied = cascade_length[i]; 
+        for (int j = 0; j < cascades[i].occupied; j++) {
+            numberIdx = card_order[cardOrderIdx] % (CARD_NUMBER.size() - 1);
+            suitIdx = card_order[cardOrderIdx] / (CARD_NUMBER.size() - 1) + 1;
+            if (numberIdx == 0) {
+                cascades[i].cascade[j] = Card(CARD_NUMBER.size() - 1, suitIdx - 1);
+            }
+            else {
+                cascades[i].cascade[j] = Card(numberIdx, suitIdx);    
+            }
+            cardOrderIdx++;
         }
     }
 }
 Board::Board(const Board& original) { 
-    this->cascades = vector<Cascade>(CASCADE_INITIAL_LENGTH.size());
-    for (int i = 0; i < cascades.size(); i++) {
-        this->cascades[i] = Cascade(original.cascades[i]);
-    }    
+    this->cascades = vector<Cascade>(CASCADES_SIZE);
+    copy(original.cascades.begin(), original.cascades.end(), this->cascades.begin());
 }
 int Board::getOccupied(int cascadeNum) {
     return cascades[cascadeNum - 1].occupied;
 }
 void Board::putCard(int to, Card card) {
-    int toIdx = to - 1;
-    cascades[toIdx].cascade[cascades[toIdx].occupied++] = card;
+    cascades[to - 1].cascade[cascades[to - 1].occupied++] = card;
 }
-Card Board::getCard(int cascadeNum, int reverseIdx) {
-    if (reverseIdx == -1) {
-        reverseIdx = cascades[cascadeNum - 1].occupied - 1;
+Card Board::getCard(int cascadeNum, int fromBack) {
+    if (cascades[cascadeNum - 1].occupied == 0) {
+        return cascades[cascadeNum - 1].cascade[0];
     }
     else {
-        reverseIdx = cascades[cascadeNum - 1].occupied - reverseIdx;
+        return cascades[cascadeNum - 1].cascade[cascades[cascadeNum - 1].occupied - fromBack];
     }
-    return cascades[cascadeNum - 1].cascade[reverseIdx];
 }
 Card Board::takeCard(int from) {
-    int fromIdx = from - 1;
-    Card tmp = cascades[fromIdx].cascade[--cascades[fromIdx].occupied];
-    cascades[fromIdx].cascade[cascades[fromIdx].occupied] = Card();
-    return tmp;
+    Card take = cascades[from - 1].cascade[--cascades[from - 1].occupied];
+    cascades[from - 1].cascade[cascades[from - 1].occupied] = Card();
+    return take;
 }
 void Board::moveCards(int from, int to, int amount) {
-    int fromIdx = from - 1;
-    int toIdx = to - 1;
+    copy(cascades[from - 1].cascade.begin() + (cascades[from - 1].occupied - amount), cascades[from - 1].cascade.begin() + cascades[from - 1].occupied, cascades[to - 1].cascade.begin() + cascades[to - 1].occupied);
     
-    copy(cascades[fromIdx].cascade.begin() + (cascades[fromIdx].occupied - amount), cascades[fromIdx].cascade.begin() + cascades[fromIdx].occupied, cascades[toIdx].cascade.begin() + cascades[toIdx].occupied);
-    
-    for (int i = cascades[fromIdx].occupied - amount; i < cascades[fromIdx].occupied; i++) {
-        cascades[fromIdx].cascade[i] = Card();
+    for (int i = cascades[from - 1].occupied - amount; i < cascades[from - 1].occupied; i++) {
+        cascades[from - 1].cascade[i] = Card();
     }
-    cascades[fromIdx].occupied -= amount;
-    cascades[toIdx].occupied += amount;
+    cascades[from - 1].occupied -= amount;
+    cascades[to - 1].occupied += amount;
 }
 void Board::showBoard() {
     for (int i = 0; i < BOARD_HEIGHT; i++) {
@@ -204,13 +217,13 @@ void Board::showBoard() {
         cout << "|";
         for (int j = 0; j < cascades.size(); j++) {
             if (j == 4) { 
-                cout << " ";
+                cout << " ";    // 프리셀, 홈셀과 맞추기 위해 한칸 공백 삽입
             }
-            if (cascades[j].cascade[i].value == 10) {
-                cout << cascades[j].cascade[i].numStr << cascades[j].cascade[i].suit << " ";
+            if (cascades[j].cascade[i].numIdx == 10) {
+                cout << CARD_NUMBER[cascades[j].cascade[i].numIdx] << CARD_SUIT[cascades[j].cascade[i].suitIdx] << " ";
             }
             else {
-                cout << " " << cascades[j].cascade[i].numStr << cascades[j].cascade[i].suit << " ";
+                cout << " " << CARD_NUMBER[cascades[j].cascade[i].numIdx] << CARD_SUIT[cascades[j].cascade[i].suitIdx] << " ";
             }
         }
         cout << "|";
@@ -281,19 +294,14 @@ void Board::showBoard() {
             }
             cout << '\n';
         }
-        // 여기에 붙여서 
-        // if (i == 3) { ~ }
-        // if (i == 4) { ~ }
-        // 도움말 작성하기
     }
 }
 bool Board::isOrdered(int cascadeNum, int amount) {
     return cascades[cascadeNum - 1].isOrdered(amount);
 }
 Board& Board::operator=(const Board& ref) {
-    for (int i = 0; i < cascades.size(); i++) {
-        this->cascades[i] = Cascade(ref.cascades[i]);
-    }    
+    this->cascades = vector<Cascade>(CASCADES_SIZE);
+    copy(ref.cascades.begin(), ref.cascades.end(), this->cascades.begin());
     return *this;
 }
 
@@ -301,15 +309,20 @@ Game::Game() {
     this->freeCell = Cell(FREECELL_SIZE);
     this->homeCell = Cell(HOMECELL_SIZE);
     this->board = Board();
+    this->moveInfo = vector<int>(4, 0);
 }
 Game::Game(const Game& original) {
     this->freeCell = original.freeCell;
     this->homeCell = original.homeCell;
     this->board = original.board;
-    this->moveLog = vector<vector<int>>(original.moveLog.size(), vector<int>());
-    for (int i = 0; i < original.moveLog.size(); i++) {
-        this->moveLog[i] = original.moveLog[i];
+    this->moveInfo = original.moveInfo;
+    if (original.moveLog.size() != 0) {
+        this->moveLog = vector<vector<int>>(original.moveLog.size(), vector<int>());
+        copy(original.moveLog.begin(), original.moveLog.end(), this->moveLog.begin());
     }
+}
+vector<int> Game::getMoveInfo() {
+    return moveInfo;
 }
 void Game::showGame() {
     cout << "   ";
@@ -348,80 +361,183 @@ void Game::showGame() {
     }
     cout << "\n\n";
 }
-bool Game::canMoveCards(vector<int> moveInfo) {
-    // moveInfo의 입력 값에 따라 경우의 수를 나눔
-    // 카드의 갯수 부터 비교 후, 유효성 판단 순으로 진행 (단순 -> 복잡)
-
+bool Game::canMoveCards(vector<int> moveInput, string& status) {
+    bool result = false;
+    int repeatCnt = 0;
+    int emptyCell = 0;
+    int emptyCascade = 0;
+    this->moveInfo = moveInput;
     
-    // to의 suit, numstr과 옮기려는 카드의 suit, numStr
-    // 카드 갯수 비교 옮기는 수, from to
-    bool result = true;
-    int movableCard = 0;
-    
-    if (moveInfo[0] == moveInfo[1]) {
-        result = false;
+    for (int i = 0; i < FREECELL_SIZE; i++) {
+        if (freeCell.getCell(i + 1).numIdx == 0) {
+            emptyCell++;
+        }
     }
-    // from Board
-    else if (moveInfo[0] > 0 && moveInfo[0] < 9) {
-        // To Board
-        if (moveInfo[1] > 0 && moveInfo[1] < 9) { 
+    for (int i = 0; i < CASCADES_SIZE; i++) {
+        if (board.getCard(i + 1).numIdx == 0 && ((i + 1) != moveInfo[1])) {
+            emptyCascade++;
+        }
+    } 
+    moveInfo[3] = (emptyCell + 1) * (emptyCascade + 1);
+
+    // 이동 카드 수가 -1 이라면, 자동으로 이동 카드 수 재설정
+    if (moveInfo[2] == -1) {
+        // 이동 가능한 수 최대 값부터 차례대로 전부 유효성 판단 실행
+        moveInfo[2] = board.getOccupied(moveInfo[0]);
+        if (moveInfo[2] == 0) {
+            status = "eec";
+        }
+        repeatCnt = moveInfo[2];
+    }
+    else {
+        // 이동 카드 수가 정상적이라면 유효성 판단 한 번만 실행
+        repeatCnt = 1;
+    }
+
+    while (repeatCnt > 0) {
+        if (moveInfo[0] == moveInfo[1]) {
+            status = "ems";  // error move to self
+        }
+        // From Board
+        else if (moveInfo[0] > 0 && moveInfo[0] < 9) {
+            // To Board
             if (board.getOccupied(moveInfo[0]) < moveInfo[2]) {
-                result = false;
+                    status = "eec";      // error not enough cards
             }
-            else if (board.getOccupied(moveInfo[1]) + moveInfo[2] > BOARD_HEIGHT) {
-                result = false;
+            else if (moveInfo[1] > 0 && moveInfo[1] < 9) { 
+                // From의 카드 수 >= 옮길 카드 수
+                if (!status.compare("fm")) {
+                    result = true;
+                    break;
+                }
+                // 옮길 수 있는 카드 수 >= 옮길 카드 수
+                else if (moveInfo[3] < moveInfo[2]) {
+                    status = "eef";     // error not enough freecell
+                    if (board.isOrdered(moveInfo[0], moveInfo[2])) {
+                        // 자동으로 갯수 설정 시 연속된 카드 나오면 정지
+                        break;
+                    }
+                }
+                // 옮기려는 카드의 연속성
+                else if (!board.isOrdered(moveInfo[0], moveInfo[2])) {
+                    status = "eno";     // error not in order
+                }
+                // From의 맨 윗장과 To의 맨 아랫장의 연속성 
+                else if (!board.getCard(moveInfo[1]).canMoveCard(board.getCard(moveInfo[0], moveInfo[2])) && board.getCard(moveInfo[1]).numIdx != 0) {
+                    status = "ewm";
+                }
+                else {
+                    result = true;
+                    break;
+                }
             }
-            else if (!board.isOrdered(moveInfo[0], moveInfo[2])) {
-                result = false;
+            // To FreeCell
+            else if (moveInfo[1] > 10 && moveInfo[1] < 15) {
+                // FreeCell이 비어 있는지 확인
+                if (freeCell.getCell(moveInfo[1] - 10).numIdx != 0) {
+                    status = "ene";     // error not empty
+                }
+                else if (board.getCard(moveInfo[0]).numIdx == 0) {
+                    status = "eec";
+                }
+                else {
+                    result = true;
+                    break;
+                }
             }
-            else if (board.getCard(moveInfo[1]).value != 0 && !(board.getCard(moveInfo[1]).canMoveCard(board.getCard(moveInfo[0], moveInfo[2])))) {
-                // 빈 줄에는 걍 올릴 수 있음
-                result = false;
+            // To HomeCell
+            else if (moveInfo[1] > 20 && moveInfo[1] < 25) {
+                // HomeCell이 비어 있으면 Ace만 이동 가능
+                if (homeCell.getCell(moveInfo[1] - 20).numIdx == 0 && board.getCard(moveInfo[0]).numIdx == 1) {
+                    result = true;
+                    break;
+                }
+                // 카드의 suit가 일치하고 숫자가 하나 더 큰 숫자가 들어가는지 확인
+                else if (homeCell.getCell(moveInfo[1] - 20).numIdx == board.getCard(moveInfo[0]).numIdx - 1 && homeCell.getCell(moveInfo[1] - 20).suitIdx == board.getCard(moveInfo[0]).suitIdx) {
+                    result = true;
+                    break;
+                }
+                else if (!status.compare("fm")) {
+                    result = true;
+                    break;
+                }
             }
-            // movableCard 갯수 공식 사용해야함
         }
-        // To FreeCell
-        else if (moveInfo[1] > 10 && moveInfo[1] < 15) {
-            
+        // From FreeCell
+        else if (moveInfo[0] > 10 && moveInfo[0] < 15) {
+            // From FreeCell의 카드 존재 여부
+            if (freeCell.getCell(moveInfo[0] - 10).numIdx == 0) {
+                status = "eec";
+            }
+            // To Board
+            else if (moveInfo[1] > 0 && moveInfo[1] < 9) {
+                // To가 비어 있지 않은데, To에 canCardMove가 false면 불가능 (canMoveCard에서 비어 있는 거 알아서 확인해 줌)
+                if (board.getCard(moveInfo[1]).canMoveCard(freeCell.getCell(moveInfo[0] - 10))) {
+                    result = true;
+                    break;
+                }
+                else if (!status.compare("fm")) {
+                    result = true;
+                    break;
+                }
+            }
+            // To FreeCell
+            else if (moveInfo[1] > 10 && moveInfo[1] < 15) {
+                // To가 비어 있는지
+                if (freeCell.getCell(moveInfo[1] - 10).numIdx != 0) {
+                    status = "ene";
+                }
+                else {
+                    result = true;
+                    break;
+                }
+            }
+            // To HomeCell
+            else if (moveInfo[1] > 20 && moveInfo[1] < 25) {
+                // HomeCell이 비어 있으면 A 인지
+                if (homeCell.getCell(moveInfo[1] - 20).numIdx == 0 && freeCell.getCell(moveInfo[0] - 10).numIdx == 1) {
+                    result = true;
+                    break;
+                }
+                // 카드의 suit가 일치하고 숫자가 하나 더 큰 숫자가 들어가는지 확인
+                else if (homeCell.getCell(moveInfo[1] - 20).numIdx == freeCell.getCell(moveInfo[0] - 10).numIdx - 1 && homeCell.getCell(moveInfo[1] - 20).suitIdx == freeCell.getCell(moveInfo[0] - 10).suitIdx) {
+                    result = true;
+                    break;
+                }
+                else if (!status.compare("fm")) {
+                    result = true;
+                    break;
+                }
+            }
         }
-        // To HomeCell
-        else if (moveInfo[1] > 20 && moveInfo[1] < 25) {
-            
+        // From HomeCell
+        else if (moveInfo[0] > 20 && moveInfo[0] < 25) {
+            if (status.compare("fm")) {
+                status = "ehm";
+            }
+            else if (homeCell.getCell(moveInfo[0] - 20).numIdx == 0) {
+                status = "eec";
+            }
+            else {
+                result = true;
+            }
+            break;
         }
+
+        repeatCnt--;
+        moveInfo[2]--;
     }
-    // From FreeCell
-    else if (moveInfo[0] > 10 && moveInfo[0] < 15) {
-        // To Board
-        if (moveInfo[1] > 0 && moveInfo[1] < 9) {
-              
-        }
-        // To FreeCell
-        else if (moveInfo[1] > 10 && moveInfo[1] < 15) {
-            
-        }
-        // To HomeCell
-        else if (moveInfo[1] > 20 && moveInfo[1] < 25) {
-            
-        }
+
+    if (result == false && status[0] != 'e') {
+        status = "ewm";
     }
-    
-    
-
-
-
-
-
-
-
-    
-
-
-
-
+    else if (result == true) {
+        status = "m";
+    }
 
     return result;
 }
-void Game::moveCards(vector<int> moveInfo, bool isUndo) {
+void Game::moveCards(bool isUndo) {
     // From Board
     if (moveInfo[0] > 0 && moveInfo[0] < 9) {
         // To Board
@@ -452,7 +568,7 @@ void Game::moveCards(vector<int> moveInfo, bool isUndo) {
             homeCell.putCell(moveInfo[1] - 20, freeCell.takeCell(moveInfo[0] - 10));
         }
     }
-    // From HomeCell - for undo
+    // From HomeCell - for undo, forceMove
     else if (moveInfo[0] > 20 && moveInfo[0] < 25) {
         // To Board
         if (moveInfo[1] > 0 && moveInfo[1] < 9) {
@@ -460,10 +576,11 @@ void Game::moveCards(vector<int> moveInfo, bool isUndo) {
         }
         // To FreeCell
         else if (moveInfo[1] > 10 && moveInfo[1] < 15) {
-            board.putCard(moveInfo[1], freeCell.takeCell(moveInfo[0] - 10));
+            freeCell.putCell(moveInfo[1] - 10, homeCell.takeCell(moveInfo[0] - 20));
         }
     }
     if (!isUndo) {
+        // undo를 실행할 때는 로그에 넣지 않음
         moveLog.push_back(moveInfo);
     }
 }
@@ -474,13 +591,20 @@ bool Game::canUndoMove() {
     return true;
 }
 void Game::undoMove() {
-    vector<int> reversedMove(3, 0);
-    reversedMove[0] = moveLog.back()[1];
-    reversedMove[1] = moveLog.back()[0];
-    reversedMove[2] = moveLog.back()[2];
-    
-    moveCards(reversedMove, true);
+    Card spaceBehindTheWall;
+    moveInfo[0] = moveLog.back()[1];
+    moveInfo[1] = moveLog.back()[0];
+    moveInfo[2] = moveLog.back()[2];
+    // homeCell에서 이동하면 1작은 카드 생성
+    if (moveInfo[0] > 20 && moveInfo[0] < 25) {
+        if (homeCell.getCell(moveInfo[0] - 20).numIdx != 1) {
+            spaceBehindTheWall = Card(homeCell.getCell(moveInfo[0] - 20));
+            spaceBehindTheWall.numIdx--;
+        }
+    }
+    moveCards(true);
     moveLog.pop_back();
+    homeCell.putCell(moveInfo[0] - 20, spaceBehindTheWall);
 }
 bool Game::canAutoMove() {
     return false;
@@ -489,7 +613,7 @@ void Game::autoMove() {
 
 }
 bool Game::canAutoComplete() {
-    for (int i = 0; i < CASCADE_INITIAL_LENGTH.size(); i++) {
+    for (int i = 0; i < CASCADES_SIZE; i++) {
         if (!board.isOrdered(i + 1)) {
             return false;
         }
@@ -506,10 +630,18 @@ Game& Game::operator=(const Game& ref) {
     this->freeCell = ref.freeCell;
     this->homeCell = ref.homeCell;
     this->board = ref.board;
-    this->moveLog = vector<vector<int>>(ref.moveLog.size(), vector<int>());
-    for (int i = 0; i < ref.moveLog.size(); i++) {
-        this->moveLog[i] = ref.moveLog[i];
+    this->moveInfo = ref.moveInfo;
+    if (ref.moveLog.size() != 0) {
+        this->moveLog = vector<vector<int>>(ref.moveLog.size(), vector<int>());
+        copy(ref.moveLog.begin(), ref.moveLog.end(), this->moveLog.begin());
     }
     return *this;
 }
 
+void Game::showCard(int cascadeNum) {
+    cout << cascadeNum << "번 캐스케이드\n";
+    cout << "numIdx: " << board.getCard(cascadeNum).numIdx << '\n';
+    cout << "suitIdx: " << board.getCard(cascadeNum).suitIdx << '\n';
+    cout << "color: " << board.getCard(cascadeNum).color << '\n';
+    sleep(3);
+}
