@@ -1,6 +1,6 @@
 # Please adjust your terminal or prompt size before start the game.
-# Each game is randomly generated, so probably the exact same game will never be played again.
-# If you wins the game, card moving commands will be disabled.
+# Each game is randomly generated, therefore the exact same game might will never be played again.
+# If you wins the game, moving card commands will be disabled.
 # There may be games that cannot be won.
 # Automatic completion is not available yet.
 
@@ -29,6 +29,7 @@ How to play
    - Tableaux must be built down by alternating colors.
    - The game is won after all cards are moved to their foundation piles in home cell.
 
+플레이 방법
    - 카드를 놓는 방법
    :카드를 이동 시킬 땐 서로 색이 다른 문양을 가지고 있고, 숫자가 자신보다 딱 하나 더 큰 카드 위에만 놓을 수 있습니다.
    - 연속된 카드
@@ -43,5 +44,12 @@ How to play
    :프리셀로 올리는 카드가 많아질수록 움직일 수 있는 카드의 장 수가 줄어드니 전략을 잘 세워서 플레이하시길 바랍니다.
 
 
-   기타 정보:
-   http://solitairelaboratory.com/fcfaq.html
+전체 코드
+- https://github.com/rainfall3363/FreeCell
+
+기타 정보
+- http://solitairelaboratory.com/fcfaq.html
+
+reference 참고 자료
+- https://modoocode.com/304
+- https://jhnyang.tistory.com/303

@@ -6,13 +6,13 @@
 class Shell {
 private:
     string command;
-    vector<int> moveInfo;
+    vector<int> moveInput;
 public:
     Shell();    
     void enterCommand();
-    void processCommand(string& status);
-    void printMessage(string status);
-    vector<int> getMoveInfo();
+    void processCommand(string& status); // 뱉기만 하면 됨
+    void printMessage(string status, vector<int> moveInfo);   // 받아야됌
+    vector<int> getMoveInput();
 };
 
 // 추후 menu 화면 추가

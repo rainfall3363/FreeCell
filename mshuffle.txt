@@ -29,13 +29,11 @@ _______________________________________________________________
 
 #define     SUIT(card)      ((card) % 4)
 #define     VALUE(card)     ((card) / 4)
-#define     COLOUR(card)    (SUIT(card) == DIAMOND || SUIT(card) ==
-HEART)
+#define     COLOUR(card)    (SUIT(card) == DIAMOND || SUIT(card) == HEART)
 
 #define     MAXPOS         21
 #define     MAXCOL          9    // includes top row as column 0
-CARD    card[MAXCOL][MAXPOS];    // current layout of cards, CARDs are
-ints
+CARD    card[MAXCOL][MAXPOS];    // current layout of cards, CARDs are ints
 
     int  i, j;                // generic counters
     int  col, pos;

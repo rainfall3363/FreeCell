@@ -7,6 +7,7 @@
         "iostream": "cpp",
         "iosfwd": "cpp",
         "algorithm": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "istream": "cpp"
     }
 }

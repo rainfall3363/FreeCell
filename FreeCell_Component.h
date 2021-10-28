@@ -3,19 +3,11 @@
 
 #include "FreeCell_Main.h"
 
-extern const int BOARD_WIDTH;
-extern const int BOARD_HEIGHT;
-extern const int FREECELL_SIZE;
-extern const int HOMECELL_SIZE;  
-extern const vector<int> CASCADE_INITIAL_LENGTH ;
-extern const vector<string> CARD_SUIT;
-extern const vector<string> CARD_NUMBER;
-
 class Card {
 public:
-    string numStr;
-    string suit;
-    int value;
+    int numIdx;
+    int suitIdx;
+    int color;
     
     Card();
     Card(int numIdx, int suitIdx);
@@ -29,7 +21,7 @@ private:
     vector<Card> cell_cards;
 public:
     Cell();
-    Cell(int cell_size);
+    Cell(int cellSize);
     Cell(const Cell& original);
     void putCell(int cellNum, Card card);    
     Card getCell(int cellNum);
@@ -57,9 +49,9 @@ private:
 public:
     Board();
     Board(const Board& original);
-    int getOccupied(int cascadeNum);    // 이동 명령 유효성 판단 위해 필요
+    int getOccupied(int cascadeNum);   
     void putCard(int to, Card card);
-    Card getCard(int cascadeNum, int reverseIdx = -1);
+    Card getCard(int cascadeNum, int fromBack = 1);
     Card takeCard(int from);
     void moveCards(int from, int to, int amount);
     void showBoard();
@@ -72,13 +64,16 @@ private:
     Cell freeCell;
     Cell homeCell;
     Board board;
+    vector<int> moveInfo;
     vector<vector<int>> moveLog;
 public:
     Game();
     Game(const Game& original);
+    vector<int> getMoveInfo();
+    void showCard(int cascadeNum);
     void showGame();
-    bool canMoveCards(vector<int> moveInfo);
-    void moveCards(vector<int> moveInfo, bool isUndo = false);
+    bool canMoveCards(vector<int> moveInput, string& status);
+    void moveCards(bool isUndo = false);
     bool canUndoMove();
     void undoMove();
     bool canAutoMove();
