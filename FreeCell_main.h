@@ -9,16 +9,7 @@
 #include <random>
 #include <algorithm>
 #include <cstdlib>
-
-#ifndef _WIN32
 #include <unistd.h>
-#endif
-
-#ifdef _WIN32
-#include <Windows.h>
-#define sleep(x) Sleep(x * 1000)
-#define system("clear") system("cls")
-#endif
 
 #define RED 1
 #define BLACK 2
@@ -33,6 +24,5 @@ using namespace std;
 
 #include "FreeCell_Component.h"
 #include "FreeCell_UI.h"
-
 
 #endif

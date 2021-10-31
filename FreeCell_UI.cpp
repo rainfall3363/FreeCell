@@ -237,7 +237,6 @@ void Shell::printMessage(vector<int> moveInfo) {
         else {
             cout << "[Move] " << ordinal[from] << " -> " << ordinal[to] << " / " << amount << " cards moved\n"; 
         }
-
     }
     else if (!status.compare("ud")) {
         cout << "[Move] Undo completed\n";

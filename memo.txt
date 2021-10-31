@@ -31,6 +31,7 @@ q~ : 다시 한 번 확인하는 질문
 e~ : error 메세지 출력
 a~ : 자동 이동
 
+
 moveInfo[4]
 0 : from
 1 : to
@@ -38,3 +39,9 @@ moveInfo[4]
 3 : movable cards
 
 
+Windows 환경에선
+- #include <unistd.h> 삭제
+- #include <Windows.h> 추가
+- system("clear") -> system("cls")
+- sleep(x) -> Sleep(x * 1000)
+- 게임판 크기 변경 (suit가 두 칸씩 차지함)

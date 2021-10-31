@@ -48,7 +48,7 @@ int main() {
             cout << "Thank you for playing FreeCell by H.J Choo\n\n";
             cout << "You can check the full code at the address below\n";
             cout << "https://github.com/rainfall3363/FreeCell\n\n";
-            sleep(2);
+            sleep(1);
             break;
         }
 

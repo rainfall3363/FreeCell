@@ -653,10 +653,10 @@ bool Game::canAutoComplete() {
 }
 void Game::autoMove(string status) {
     if (!status.compare("am")) {
-        sleep(2);
+        usleep(800000);
     }
     else if (!status.compare("ac")) {
-        sleep(1);
+        usleep(300000);
     }
     moveCards();
 }
