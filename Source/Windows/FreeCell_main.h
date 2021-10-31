@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <Windows.h>
+#include <conio.h>
 
 #define RED 1
 #define BLACK 2
