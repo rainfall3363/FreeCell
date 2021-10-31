@@ -29,19 +29,12 @@
 status
 q~ : 다시 한 번 확인하는 질문
 e~ : error 메세지 출력
+a~ : 자동 이동
 
-forceMove
-- from to amount
-- amount 입력 안할 시 무조건 1장 이동
+moveInfo[4]
+0 : from
+1 : to
+2 : amount
+3 : movable cards
 
-
-
-//////////////////////////////////////////////////////
-지금 발생하는 오류
-f, h 하나만 써도 자동으로 찾아가게
-내려올땐 번호 명시해야함
-
-각 homecell에 문양 고정
-
-문양 먼저 -> 움직 갯수  
 

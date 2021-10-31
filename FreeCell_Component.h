@@ -14,6 +14,7 @@ public:
     Card(const Card& original);
     bool canMoveCard(Card card);
     Card& operator=(const Card& ref);
+    bool operator==(const Card& ref);
 };
 
 class Cell {
@@ -70,16 +71,14 @@ public:
     Game();
     Game(const Game& original);
     vector<int> getMoveInfo();
-    void showCard(int cascadeNum);
     void showGame();
     bool canMoveCards(vector<int> moveInput, string& status);
     void moveCards(bool isUndo = false);
     bool canUndoMove();
     void undoMove();
     bool canAutoMove();
-    void autoMove();
     bool canAutoComplete();
-    void autoComplete();
+    void autoMove(string status);
     bool isWin();
     Game& operator=(const Game& ref);
 };

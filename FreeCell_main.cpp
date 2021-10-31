@@ -8,17 +8,19 @@ int main() {
     string status = "d";
 
     while (true) {
+        // 게임 출력 파트
         system("clear");
         cout << "FreeCell by H.J.Choo\n\n";
-        // 게임 출력 파트
         ongoing.showGame();
-        shell.printMessage(status, ongoing.getMoveInfo());
+        shell.setStatus(status);    // shell의 status 세팅
+        shell.printMessage(ongoing.getMoveInfo());
         // 명령어 입력, 분석 파트
         shell.enterCommand();
-        shell.processCommand(status);
-
+        shell.processCommand();
+        
         // 명령어 처리 파트
-        if (!status.compare("m") || !status.compare("fm")) {
+        status = shell.getStatus();     // shell에서 변경된 status 불러옴
+        if (!status.compare("m")) {
             if (ongoing.canMoveCards(shell.getMoveInput(), status)) {
                 ongoing.moveCards();
             }
@@ -31,6 +33,9 @@ int main() {
                 status = "eud";
             }
         }
+        else if (!status.compare("am") || !status.compare("ac")) {
+            ongoing.autoMove(status);
+        }
         else if (!status.compare("r")) {
             ongoing = original;
         }
@@ -40,21 +45,29 @@ int main() {
         }
         else if (!status.compare("x")) {
             system("clear");
-            cout << "Thank you for playing FreeCell by rainfall3363\n\n";
+            cout << "Thank you for playing FreeCell by H.J Choo\n\n";
+            cout << "You can check the full code at the address below\n";
+            cout << "https://github.com/rainfall3363/FreeCell\n\n";
+            sleep(2);
             break;
         }
-        else if (!status.compare("gc")) {
-            ongoing.showCard(shell.getMoveInput()[3]);
-            status = "d";
-        }
 
-        // 게임 결과 처리 파트
-        while (ongoing.canAutoMove()) {
-            ongoing.autoMove();
-            if (ongoing.canAutoComplete()) {
-                ongoing.autoComplete();
+        // 자동 이동 확인 파트
+        if (!status.compare("am") || !status.compare("ac") || !status.compare("m")) {
+            if (ongoing.canAutoMove()) {
+                if (ongoing.canAutoComplete()) {
+                   status = "ac";
+                }
+                else {
+                    status = "am";
+                }
+            }
+            else {
+                status = "m";
             }
         }
+
+        // 게임 승리 판별 파트
         if (ongoing.isWin()) {
             status = "v";
         }

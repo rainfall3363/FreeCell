@@ -2,48 +2,61 @@
 
 Shell::Shell() {
     this->command = "";
+    this->status = "";
     moveInput = vector<int>(4, 0);
 }
 void Shell::enterCommand() {
-    cout << ">> ";
-    getline(cin, this->command);
+    if (!status.compare("am")) {
+         cout << "|| --- Auto Moving ---\n";
+    }
+    else if (!status.compare("ac")) {
+        cout << "|| <<< Auto Completion >>>\n";
+    }
+    else {
+        cout << ">> ";
+        getline(cin, this->command);
+    }
 }
-void Shell::processCommand(string& status) {
-    int amount = 0;
+void Shell::processCommand() {
+    bool moveValidity = true;
     stringstream ss(command);
     vector<string> commandTokens;
     string token;
+
+    if (status[0] == 'a') {
+        return;
+    }
+    // 명령어 Tokenize
     while (getline(ss, token, ' ')) {
 		commandTokens.push_back(token);
 	}
-    
+    // 명령어 분석 파트
+    // 명령어 토큰이 0개인 경우 (빈 명령어)
     if (commandTokens.size() == 0) {
-        ;   // 빈 명령어 무시
+        if (status.compare("v") && status[0] != 'q') {
+            status = "d";
+        }
     }
+    // 명령어 토큰이 1개인 경우
     else if (commandTokens.size() == 1) {
         //////////////// 개발자 도구 /////////////////
-        if (!commandTokens[0].compare("forceMove")) {
-            status = "fm";
-            enterCommand();
-            processCommand(status);
-            return;
-        }
-        else if (!commandTokens[0].compare("getMode")) {
+        if (!commandTokens[0].compare("getMode")) {
             cout << status << '\n';
             sleep(3);
             status = "d";
             return;
         }
         else if (!commandTokens[0].compare("setMode")) {
+            cout << ">> ";
             cin >> status;
             return;
         }
-        else if (!commandTokens[0].compare("getCard")) {
-            status = "gc";
-            cin >> moveInput[3];
+        else if (!commandTokens[0].compare("hi") || !commandTokens[0].compare("hello")) {
+            status = "hi";
             return;
         }
         ///////////////////////////////////////////
+        // 확인 질문의 경우
         if (status[0] == 'q') {
             if (!(commandTokens[0].compare("Y")) || !(commandTokens[0].compare("y")) || !(commandTokens[0].compare("yes"))) {
                 // q 만 뗌
@@ -73,9 +86,6 @@ void Shell::processCommand(string& status) {
                     status = "qr";
                 }
             }
-            else if (!(commandTokens[0].compare("undo")) && status.compare("v")) {
-                status = "ud";
-            }
             else if (!(commandTokens[0].compare("exit"))) {
                 if (!status.compare("v")) {
                     status = "x";
@@ -83,6 +93,9 @@ void Shell::processCommand(string& status) {
                 else {
                     status = "qx";
                 }
+            }
+            else if (!(commandTokens[0].compare("undo")) && status.compare("v")) {
+                status = "ud";
             }
             else if (!status.compare("v")) {
                 ;
@@ -92,211 +105,112 @@ void Shell::processCommand(string& status) {
             }
         }
     }
-    else if (commandTokens.size() == 2 && status.compare("v")) {
-        if (commandTokens[0].size() == 1 && commandTokens[1].size() == 1) {
-            if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9' && commandTokens[1][0] > '0' && commandTokens[1][0] < '9') {
+    // victory 일 때 1개 토큰 명령어 이외는 무시
+    else if (!status.compare("v")) {
+        ;
+    }
+    // 명령어 토큰이 2개인 경우 (이동 명령)
+    else if (commandTokens.size() == 2) {
+        // From 토큰
+        // 길이가 1인 경우
+        if (commandTokens[0].size() == 1) {
+            if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9') {
                 moveInput[0] = (int)commandTokens[0][0] - 48;
-                moveInput[1] = (int)commandTokens[1][0] - 48;
-                if (status.compare("fm")) {
-                    status = "m";
-                }
             }
             else {
-                status = "uc";
+                moveValidity = false;
             }
         }
-        else if (commandTokens[0].size() == 1 && commandTokens[1].size() == 2) { 
-            if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9' && (commandTokens[1][0] == 'h' || commandTokens[1][0] == 'f') && commandTokens[1][1] < '5' && commandTokens[1][1] > '0') {
-                moveInput[0] = (int)commandTokens[0][0] - 48;
-                if (commandTokens[1][0] == 'f') {
-                    moveInput[1] = 10 + (int)commandTokens[1][1] - 48;
-                }
-                else if (commandTokens[1][0] == 'h') {
-                    moveInput[1] = 20 + (int)commandTokens[1][1] - 48;
-                }
-                if (status.compare("fm")) {
-                    status = "m";
-                }
+        // 길이가 2인 경우
+        else if (commandTokens[0].size() == 2) {
+            if (commandTokens[0][0] == 'f' && commandTokens[0][1] > '0' && commandTokens[0][1] < '5') {
+                moveInput[0] = 10 + (int)commandTokens[0][1] - 48;
             }
             else {
-                status = "uc";
-            }
-        }
-        else if (commandTokens[0].size() == 2 && commandTokens[1].size() == 1) {
-            if ((commandTokens[0][0] == 'f' || commandTokens[0][0] == 'h') && commandTokens[0][1] < '5' && commandTokens[0][1] > '0' && commandTokens[1][0] < '9' && commandTokens[1][0] > '0') {
-                if (commandTokens[0][0] == 'f') {
-                    moveInput[0] = 10 + (int)commandTokens[0][1] - 48;
-                }
-                else if (commandTokens[0][0] == 'h') {
-                    moveInput[0] = 20 + (int)commandTokens[0][1] - 48;
-                }
-                moveInput[1] = (int)commandTokens[1][0] - 48;
-                if (status.compare("fm")) {
-                    status = "m";
-                }
-            }
-            else {
-                status = "uc";
-            }
-        }
-        else if (commandTokens[0].size() == 2 && commandTokens[1].size() == 2) {
-            if ((commandTokens[0][0] == 'f' || commandTokens[0][0] == 'h') && commandTokens[0][1] < '5' && commandTokens[0][1] > '0' && (commandTokens[1][0] == 'f' || commandTokens[1][0] == 'h') && commandTokens[1][1] > '0' && commandTokens[1][1] < '5') {
-                if (commandTokens[0][0] == 'f') {
-                    moveInput[0] = 10 + (int)commandTokens[0][1] - 48;
-                }
-                else if (commandTokens[0][0] == 'h') {
-                    moveInput[0] = 20 + (int)commandTokens[0][1] - 48;
-                }
-                if (commandTokens[1][0] == 'f') {
-                    moveInput[1] = 10 + (int)commandTokens[1][1] - 48;
-                }
-                else if (commandTokens[1][0] == 'h') {
-                    moveInput[1] = 20 + (int)commandTokens[1][1] - 48;
-                }
-                if (status.compare("fm")) {
-                    status = "m";
-                }
-            }
-            else {
-                status = "uc";
+                moveValidity = false;
             }
         }
         else {
-            status = "uc";
+            moveValidity = false;
         }
-
-        if (moveInput[0] < 9 && moveInput[0] > 0 && moveInput[1] < 9 && moveInput[1] > 0 && status.compare("fm")) {
-            moveInput[2] = -1;
+        // To 토큰
+        // 길이가 1인 경우
+        if (commandTokens[1].size() == 1) { 
+            if (commandTokens[1][0] > '0' && commandTokens[1][0] < '9') {
+                moveInput[1] = (int)commandTokens[1][0] - 48;
+            }
+            else if (commandTokens[1][0] == 'f') {
+                moveInput[1] = 10;
+            }
+            else if (commandTokens[1][0] == 'h') {
+                moveInput[1] = 20;
+            } 
+            else {
+                moveValidity = false;
+            }
+        }
+        else {
+            moveValidity = false;
+        }
+        // Amount 토큰
+        if (moveInput[0] < 9 && moveInput[0] > 0 && moveInput[1] < 9 && moveInput[1] > 0) {
+            moveInput[2] = -1;  // 보드 간의 이동 시엔 자동 갯수 설정으로 이행
         }
         else {
             moveInput[2] = 1;
         }
-    }
-    else if (commandTokens.size() == 3 && status.compare("v")) {
-        if (commandTokens[2].size() == 1 && commandTokens[2][0] > '0' && commandTokens[2][0] <= '9') {
-            amount = (int)commandTokens[2][0] - 48;
-            if (status.compare("fm")) {
-                status = "m";    
-            }
-        }
-        else if (commandTokens[2].size() == 2 && commandTokens[2][0] == '1' && commandTokens[2][1] >= '0' && commandTokens[2][1] <= '9') {
-            amount = ((int)commandTokens[2][0] - 48) * 10 + (int)commandTokens[2][1] - 48;
-            if (status.compare("fm")) {
-                status = "m";    
-            }
+
+        // Move 명령 유효성 판단
+        if (moveValidity) {
+            status = "m";
         }
         else {
             status = "uc";
         }
-
-        if (status.compare("uc")) {
+    }
+    // 명령어 토큰이 3개인 경우 (이동 명령)
+    else if (commandTokens.size() == 3) {
+        // Amount 토큰
+        if (commandTokens[2].size() == 1 && commandTokens[2][0] > '0' && commandTokens[2][0] <= '9') {
+            moveInput[2] = (int)commandTokens[2][0] - 48;
+        }
+        else if (commandTokens[2].size() == 2 && commandTokens[2][0] == '1' && commandTokens[2][1] >= '0' && commandTokens[2][1] <= '9') {
+            moveInput[2] = ((int)commandTokens[2][0] - 48) * 10 + (int)commandTokens[2][1] - 48;
+        }
+        else {
+            moveValidity = false;
+        }
+        // Cascade to Cascade 1가지 경우의 수만 존재함        
+        if (moveValidity) {
             if (commandTokens[0].size() == 1 && commandTokens[1].size() == 1) {
                 if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9' && commandTokens[1][0] > '0' && commandTokens[1][0] < '9') {
-                    if (amount < 1 || amount > BOARD_HEIGHT) {
-                        status = "uc";
-                    }
-                    else {
-                        moveInput[0] = (int)commandTokens[0][0] - 48;
-                        moveInput[1] = (int)commandTokens[1][0] - 48;
-                        if (status.compare("fm")) {
-                            status = "m";    
-                        }
-                    }
+                    moveInput[0] = (int)commandTokens[0][0] - 48;
+                    moveInput[1] = (int)commandTokens[1][0] - 48; 
                 }
                 else {
-                    status = "uc";
-                }
-            }
-            else if (commandTokens[0].size() == 1 && commandTokens[1].size() == 2) { 
-                if (commandTokens[0][0] > '0' && commandTokens[0][0] < '9' && (commandTokens[1][0] == 'h' || commandTokens[1][0] == 'f') && commandTokens[1][1] < '5' && commandTokens[1][1] > '0') {
-                    if (amount != 1) {
-                        status = "uc";
-                    }
-                    else {
-                        moveInput[0] = (int)commandTokens[0][0] - 48;
-                        if (commandTokens[1][0] == 'f') {
-                            moveInput[1] = 10 + (int)commandTokens[1][1] - 48;
-                        }
-                        else if (commandTokens[1][0] == 'h') {
-                            moveInput[1] = 20 + (int)commandTokens[1][1] - 48;
-                        }
-                        if (status.compare("fm")) {
-                            status = "m";    
-                        }
-                    }
-                }
-                else {
-                    status = "uc";
-                }
-            }
-            else if (commandTokens[0].size() == 2 && commandTokens[1].size() == 1) {
-                if ((commandTokens[0][0] == 'f' || commandTokens[0][0] == 'h') && commandTokens[0][1] < '5' && commandTokens[0][1] > '0' && commandTokens[1][0] < '9' && commandTokens[1][0] > '0') {
-                    if (amount != 1) {
-                        status = "uc";
-                    }
-                    else {
-                        if (commandTokens[0][0] == 'f') {
-                            moveInput[0] = 10 + (int)commandTokens[0][1] - 48;
-                        }
-                        else if (commandTokens[0][0] == 'h') {
-                            moveInput[0] = 20 + (int)commandTokens[0][1] - 48;
-                        }
-                        moveInput[1] = (int)commandTokens[1][0] - 48;
-                        if (status.compare("fm")) {
-                            status = "m";    
-                        }
-                    }
-                }
-                else {
-                    status = "uc";
-                }
-            }
-            else if (commandTokens[0].size() == 2 && commandTokens[1].size() == 2) {
-                if ((commandTokens[0][0] == 'f' || commandTokens[0][0] == 'h') && commandTokens[0][1] < '5' && commandTokens[0][1] > '0' && (commandTokens[1][0] == 'f' || commandTokens[1][0] == 'h') && commandTokens[1][1] > '0' && commandTokens[1][1] < '5') {
-                    if (amount != 1) {
-                        status = "uc";
-                    }
-                    else {
-                        if (commandTokens[0][0] == 'f') {
-                            moveInput[0] = 10 + (int)commandTokens[0][1] - 48;
-                        }
-                        else if (commandTokens[0][0] == 'h') {
-                            moveInput[0] = 20 + (int)commandTokens[0][1] - 48;
-                        }
-                        if (commandTokens[1][0] == 'f') {
-                            moveInput[1] = 10 + (int)commandTokens[1][1] - 48;
-                        }
-                        else if (commandTokens[1][0] == 'h') {
-                            moveInput[1] = 20 + (int)commandTokens[1][1] - 48;
-                        }
-                        if (status.compare("fm")) {
-                            status = "m";    
-                        }
-                    }
-                }
-                else {
-                    status = "uc";
+                    moveValidity = false;
                 }
             }
             else {
-                status = "uc";
+                moveValidity = false;
             }
-            moveInput[2] = amount;
+        }
+        
+        // Move 명령 유효성 판단
+        if (moveValidity) {
+            status = "m";
+        }
+        else {
+            status = "uc";
         }
     }
-    else if (!status.compare("v")) {
-        ;
-    }
+    // 명령어 토큰이 4개 이상인 경우
     else {
         status = "uc";
     }
-
-    if (!status.compare("uc")) {
-        moveInput = vector<int>(4, 0);
-    }
 }
-void Shell::printMessage(string status, vector<int> moveInfo) {
-    vector<string> ordinal = {"1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "f1", "f2", "f3", "f4", "h1", "h2", "h3", "h4"};
+void Shell::printMessage(vector<int> moveInfo) {
+    vector<string> ordinal = {"1", "2", "3", "4", "5", "6", "7", "8", "F1", "F2", "F3", "F4", "H1", "H2", "H3", "H4"};
     int from = moveInfo[0] - 1;
     int to = moveInfo[1] - 1;
     int amount = moveInfo[2];
@@ -316,16 +230,17 @@ void Shell::printMessage(string status, vector<int> moveInfo) {
     if (!status.compare("d")) {
         cout << "Make your move\n";
     }
-    else if (!status.compare("m")) {
-        if (amount > 1) {
-            cout << "[Move] " << ordinal[from] << " -> " << ordinal[to] << " / " << amount << " cards moved\n"; 
+    else if (!status.compare("m") || !status.compare("am") || !status.compare("ac")) {
+        if (moveInfo[2] == 1) {
+            cout << "[Move] " << ordinal[from] << " -> " << ordinal[to] << " / " << amount << " card moved\n"; 
         }
         else {
-            cout << "[Move] " << ordinal[from] << " -> " << ordinal[to] << " / " << amount << " card moved\n";
+            cout << "[Move] " << ordinal[from] << " -> " << ordinal[to] << " / " << amount << " cards moved\n"; 
         }
+
     }
     else if (!status.compare("ud")) {
-        cout << "[Move] Undo completed\n"; 
+        cout << "[Move] Undo completed\n";
     }
     else if (!status.compare("qr")) {
         cout << "[Game] Restart the game? (Y/N)\n";    
@@ -371,11 +286,14 @@ void Shell::printMessage(string status, vector<int> moveInfo) {
     else if (!status.compare("eno")) {
         cout << "[Error] Cards not in order\n";
     }
-    else if (!status.compare("ene")) {
-        cout << "[Error] Cell is not empty\n";
+    else if (!status.compare("eff")) {
+        cout << "[Error] FreeCell is full\n";
     }
     else if (!status.compare("ehm")) {
         cout << "[Error] Can't move HomeCell's card\n";
+    }
+    else if (!status.compare("hi")) {
+        cout << "Hello there!\n";
     }
     else {
         cout << "[Error] Unvalid status\n";
@@ -384,3 +302,35 @@ void Shell::printMessage(string status, vector<int> moveInfo) {
 vector<int> Shell::getMoveInput() {
     return moveInput;
 }
+void Shell::setStatus(string status) {
+    this->status = status;
+}
+string Shell::getStatus() {
+    return status;
+}
+/* void Shell::saveLog() {   // Save command & message at log file
+    ; 
+} */
+
+/* Menu::Menu() {
+    ;
+}
+void Menu::inputMenu() {
+    cin >> menuSelection;
+
+}
+void Menu::displayMenu() {
+
+}
+void Menu::newGame() {
+
+}
+void Menu::loadGame() {
+
+}
+void Menu::help() {
+
+}
+void Menu::exitGame() {
+
+} */

@@ -2,22 +2,28 @@
 # Each game is randomly generated, therefore the exact same game might will never be played again.
 # If you wins the game, moving card commands will be disabled.
 # There may be games that cannot be won.
-# Automatic completion is not available yet.
+
 
 *** Command List ***
 1. "new"
    - Generate new game
+
 2. "restart"
    - Restart present game from beginning
+
 3. "exit"
    - Exit program
+
 4. "undo"
    - Undo last move
+
 5. "From To", "From To Amount"
    - Move cards
-   - If skip enter amount, automatically set as 1
-   - From: 1~8 f1~f4, To: 1~8 f1~f4 h1~h4, Amount: (blank) 1~18
-   - ex) 1 8 3 / f3 h1 / f1 4 / 3 h4 / f1 h3
+   - You can enter amount only when moving cards between cascades
+   - If skip enter amount, It will automatically set
+   - From: 1~8 f1~f4, To: 1~8 f h, Amount: (blank) 1~20
+   - ex) 1 8 3 / 3 f / 2 h / f1 4 / f1 h
+
 
 How to play
    - The goal of the game is to raise all of the cascade's cards 
@@ -25,7 +31,7 @@ How to play
    - Home cell's foundations are built up by suit. The Foundations 
      begin with Ace and are built up to King.
    - The number of cards that can be moved at once is number of empty cell in free cell + 1,
-     and if there is an empty cascade, it can increase further.
+     and if there is an empty cascade, it can be increased further.
    - Tableaux must be built down by alternating colors.
    - The game is won after all cards are moved to their foundation piles in home cell.
 
@@ -41,7 +47,7 @@ How to play
    :홈셀에 모든 카드를 올리는 것이 목적이기 때문에, 작은 수의 카드부터 찾아야 합니다.
    :연속된 카드 뭉치를 만들고, 필요없는 카드는 프리셀로 올리고 낮은 수의 카드는 홈셀로 올리는 플레이를 반복하면
     승리할 수 있습니다.
-   :프리셀로 올리는 카드가 많아질수록 움직일 수 있는 카드의 장 수가 줄어드니 전략을 잘 세워서 플레이하시길 바랍니다.
+   :프리셀로 올리는 카드가 많아질수록 움직일 수 있는 카드의 장 수가 줄어드니 전략을 잘 세워야 합니다.
 
 
 전체 코드
@@ -50,6 +56,7 @@ How to play
 기타 정보
 - http://solitairelaboratory.com/fcfaq.html
 
-reference 참고 자료
+참고 자료
+- https://en.wikipedia.org/wiki/FreeCell
 - https://modoocode.com/304
 - https://jhnyang.tistory.com/303

@@ -16,7 +16,7 @@
 
 #ifdef _WIN32
 #include <Windows.h>
-#define usleep(x) Sleep(x)
+#define sleep(x) Sleep(x * 1000)
 #define system("clear") system("cls")
 #endif
 
