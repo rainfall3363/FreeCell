@@ -1,3 +1,5 @@
+Download FreeCell(Linux ver).zip or FreeCell(Windows ver).zip to play game
+
 # Please adjust your terminal or prompt size before start the game.
 # Each game is randomly generated, therefore the exact same game might will never be played again.
 # If you wins the game, moving card commands will be disabled.
