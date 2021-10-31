@@ -1,25 +1,25 @@
 #include "FreeCell_Main.h"
 
 int main() {
-	// °ÔÀÓ »ı¼º ÆÄÆ®
+	// ê²Œì„ ìƒì„± íŒŒíŠ¸
 	Game original;
 	Game ongoing = original;
 	Shell shell;
 	string status = "d";
 
 	while (true) {
-		// °ÔÀÓ Ãâ·Â ÆÄÆ®
+		// ê²Œì„ ì¶œë ¥ íŒŒíŠ¸
 		system("cls");
 		cout << "FreeCell by H.J.Choo\n\n";
 		ongoing.showGame();
-		shell.setStatus(status);    // shellÀÇ status ¼¼ÆÃ
+		shell.setStatus(status);    // shellì˜ status ì„¸íŒ…
 		shell.printMessage(ongoing.getMoveInfo());
-		// ¸í·É¾î ÀÔ·Â, ºĞ¼® ÆÄÆ®
+		// ëª…ë ¹ì–´ ì…ë ¥, ë¶„ì„ íŒŒíŠ¸
 		shell.enterCommand();
 		shell.processCommand();
 
-		// ¸í·É¾î Ã³¸® ÆÄÆ®
-		status = shell.getStatus();     // shell¿¡¼­ º¯°æµÈ status ºÒ·¯¿È
+		// ëª…ë ¹ì–´ ì²˜ë¦¬ íŒŒíŠ¸
+		status = shell.getStatus();     // shellì—ì„œ ë³€ê²½ëœ status ë¶ˆëŸ¬ì˜´
 		if (!status.compare("m")) {
 			if (ongoing.canMoveCards(shell.getMoveInput(), status)) {
 				ongoing.moveCards();
@@ -48,11 +48,11 @@ int main() {
 			cout << "Thank you for playing FreeCell by H.J Choo\n\n";
 			cout << "You can check the full code at the address below\n";
 			cout << "https://github.com/rainfall3363/FreeCell\n\n";
-			Sleep(1000);
+			_getch();
 			break;
 		}
 
-		// ÀÚµ¿ ÀÌµ¿ È®ÀÎ ÆÄÆ®
+		// ìë™ ì´ë™ í™•ì¸ íŒŒíŠ¸
 		if (!status.compare("am") || !status.compare("ac") || !status.compare("m")) {
 			if (ongoing.canAutoMove()) {
 				if (ongoing.canAutoComplete()) {
@@ -67,7 +67,7 @@ int main() {
 			}
 		}
 
-		// °ÔÀÓ ½Â¸® ÆÇº° ÆÄÆ®
+		// ê²Œì„ ìŠ¹ë¦¬ íŒë³„ íŒŒíŠ¸
 		if (ongoing.isWin()) {
 			status = "v";
 		}
