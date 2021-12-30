@@ -1,12 +1,9 @@
-<img src="./Freecell_screenshot.png" width="600" height="416">
-
+<img src="./Freecell_screenshot.png" width="600" height="416">  
 
 - Please adjust your terminal or prompt size before start the game.
 - Each game is randomly generated, therefore the exact same game might will never be played again.
 - If you wins the game, moving card commands will be disabled.
-- There may be games that cannot be won.
-
-
+- There may be games that cannot be won.  
 
 *** Command List ***
 1. "new"
@@ -21,9 +18,8 @@
    - Move cards
    - You can enter amount only when moving cards between cascades
    - If skip enter amount, It will automatically set
-   - From: 1~8 f1~f4, To: 1~8 f h, Amount: (blank) 1~20
-   - ex) 1 8 3 / 3 f / 2 h / f1 4 / f1 h
-
+   - From: 1/~8 f1/~f4, To: 1/~8 f h, Amount: (blank) 1/~20
+   - ex) 1 8 3 / 3 f / 2 h / f1 4 / f1 h  
 
 How to play
    - The goal of the game is to raise all of the cascade's cards 
@@ -33,7 +29,7 @@ How to play
    - The number of cards that can be moved at once is number of empty cell in free cell + 1,
      and if there is an empty cascade, it can be increased further.
    - Tableaux must be built down by alternating colors.
-   - The game is won after all cards are moved to their foundation piles in home cell.
+   - The game is won after all cards are moved to their foundation piles in home cell.  
 
 플레이 방법
    - 카드를 놓는 방법
@@ -49,10 +45,12 @@ How to play
 
 
 전체 코드
-- https://github.com/rainfall3363/FreeCell
+   - https://github.com/rainfall3363/FreeCell
+
 기타 정보
-- http://solitairelaboratory.com/fcfaq.html
+   - http://solitairelaboratory.com/fcfaq.html
+
 참고 자료
-- https://en.wikipedia.org/wiki/FreeCell
-- https://modoocode.com/304
+   - https://en.wikipedia.org/wiki/FreeCell
+   - https://modoocode.com/304
 
