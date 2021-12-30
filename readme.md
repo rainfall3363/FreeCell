@@ -1,4 +1,4 @@
-![title](./Freecell_screenshot.png){: width="50%" height="50%"}
+<img src="./Freecell_screenshot.png" width="300" height="300">
 
 
 - Please adjust your terminal or prompt size before start the game.
@@ -50,10 +50,8 @@ How to play
 
 전체 코드
 - https://github.com/rainfall3363/FreeCell
-
 기타 정보
 - http://solitairelaboratory.com/fcfaq.html
-
 참고 자료
 - https://en.wikipedia.org/wiki/FreeCell
 - https://modoocode.com/304
