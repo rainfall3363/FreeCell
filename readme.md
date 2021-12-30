@@ -19,7 +19,7 @@
    - Move cards
    - You can enter amount only when moving cards between cascades
    - If skip enter amount, It will automatically set
-   - From: 1/~8 f1/~f4, To: 1/~8 f h, Amount: (blank) 1/~20
+   - From: 1-8 f1-f4, To: 1-8 f h, Amount: (blank) 1-20
    - ex) 1 8 3 / 3 f / 2 h / f1 4 / f1 h  
 
 
