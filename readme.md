@@ -59,4 +59,4 @@ How to play
 참고 자료
 - https://en.wikipedia.org/wiki/FreeCell
 - https://modoocode.com/304
-- https://jhnyang.tistory.com/303
+
