@@ -1,4 +1,4 @@
-<img src="./Freecell_screenshot.png">
+![title](./Freecell_screenshot.png){: width="50" height="50"}
 
 - Please adjust your terminal or prompt size before start the game.
 - Each game is randomly generated, therefore the exact same game might will never be played again.
