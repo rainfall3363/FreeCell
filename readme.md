@@ -1,4 +1,4 @@
-<img src="./Freecell_screenshot.png" width="950" height="310">
+<img src="./Freecell_screenshot.png" width="600" height="416">
 
 
 - Please adjust your terminal or prompt size before start the game.
