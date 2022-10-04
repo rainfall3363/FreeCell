@@ -1,3 +1,5 @@
+프리셀을 즐겨하는 와중에 C++로 구현해볼 수 있겠다라는 생각해 진행해본 프로젝트입니다. 
+
 <img src="./Freecell_screenshot.png" width="600" height="416">  
 
 - Please adjust your terminal or prompt size before start the game.
